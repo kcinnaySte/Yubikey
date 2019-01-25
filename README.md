@@ -13,7 +13,7 @@ Diese Doku erklärt wie man den Yubikey einrichtet und zur Verbindung per SSH ve
     - [Aufspielen des Sub-Keys auf den Yubikey](#aufspielen-des-sub-keys-auf-den-yubikey)
     - [Exportieren des Public-Keys](#exportieren-des-public-keys)
   - [Client](#client)
-    - [Installation auf OS X](#installation-auf-os-x)
+    - [Einrichten der Keys für SSH auf MacOS](#einrichten-der-keys-f%C3%BCr-ssh-auf-macos)
   - [Reset des Yubikey](#reset-des-yubikey)
 
 
@@ -556,7 +556,7 @@ gpg2 -a --export 0xC7C50C3E030B3220 >> key.asc
 ```
 
 ## Client
-### Installation auf OS X
+### Einrichten der Keys für SSH auf MacOS
 Die Installation von gpg kann mit `brew install gnupg2` durchgeführt werden.
 
 Danach müssen folgende Einstellungen vorgenommen werden, damit ssh die GPG-Keys verwendet
