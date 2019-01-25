@@ -1,4 +1,22 @@
 # YubiKey Doku
+
+Diese Doku erklärt wie man den Yubikey einrichtet und zur Verbindung per SSH verwenden kann.
+
+## Inhaltsverzeichnis
+- [YubiKey Doku](#yubikey-doku)
+  - [Inhaltsverzeichnis](#inhaltsverzeichnis)
+  - [Installation](#installation)
+    - [Einrichten der Umgebung](#einrichten-der-umgebung)
+    - [Generieren der GPG-Keys](#generieren-der-gpg-keys)
+    - [Sichern der GPG-Keys](#sichern-der-gpg-keys)
+    - [Konfigurieren des Yubikey](#konfigurieren-des-yubikey)
+    - [Aufspielen des Sub-Keys auf den Yubikey](#aufspielen-des-sub-keys-auf-den-yubikey)
+    - [Exportieren des Public-Keys](#exportieren-des-public-keys)
+  - [Client](#client)
+    - [Installation auf OS X](#installation-auf-os-x)
+  - [Reset des Yubikey](#reset-des-yubikey)
+
+
 ## Installation
 ### Einrichten der Umgebung
 Ich habe eine VM-Ware Maschiene verwendt, um die GPG-Keys zu generieren. Natürlich könnte man wenn man noch mehr auf Sicherheit bedacht ist, auch eine komplett Air-Gapped Maschiene benutzen.
@@ -531,7 +549,38 @@ ssb* rsa2048/0x9A4801FEF3AD0869
 gpg> save
 ```
 
+### Exportieren des Public-Keys
+Der Public-Key kann mit folgendem Befehl in die Datei *key.asc* exportiert werden
+```
+gpg2 -a --export 0xC7C50C3E030B3220 >> key.asc
+```
 
+## Client
+### Installation auf OS X
+Die Installation von gpg kann mit `brew install gnupg2` durchgeführt werden.
+
+Danach müssen folgende Einstellungen vorgenommen werden, damit ssh die GPG-Keys verwendet
+
+
+Hinzufügen oder Editieren der Datei `~/.gnupg/gpg-agent.conf`:
+```
+default-cache-ttl 600
+max-cache-ttl 7200
+enable-ssh-support
+```
+
+Hinzufügen oder Editieren der Datei `~/.bash_profile`:
+``` bash
+# Added for SSH - GPG Support
+gpgconf --launch gpg-agent
+GPG_TTY=$(/usr/bin/tty)
+SSH_AUTH_SOCK="$HOME/.gnupg/S.gpg-agent.ssh"
+export GPG_TTY SSH_AUTH_SOCK
+```
+
+Anschließend ist ein Neustart des Macs notwendig.
+
+Der SSH-Key kann nun mit `ssh-add -L` exportiert werden, um ihn auf den Servern in den uthorized_keys einzutragen.
 
 
 ## Reset des Yubikey
