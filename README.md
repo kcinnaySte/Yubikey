@@ -683,4 +683,4 @@ Vielen Dank an:
 + [FROGESLNET (EN)](https://www.forgesi.net/gpg-smartcard/)
 + [Yubico-Dev (EN)](https://developers.yubico.com/PGP/SSH_authentication/Windows.html)
 + [Codingnest.com](https://codingnest.com/how-to-use-gpg-with-yubikey-wsl/=)
-+ [benpye][https://github.com/benpye]
++ [benpye](https://github.com/benpye)
