@@ -14,6 +14,7 @@ Diese Doku erklärt wie man den Yubikey einrichtet und zur Verbindung per SSH ve
     - [Exportieren des Public-Keys](#exportieren-des-public-keys)
   - [Client](#client)
     - [Einrichten der Keys für SSH auf MacOS](#einrichten-der-keys-f%C3%BCr-ssh-auf-macos)
+    - [Wechseln des Yubikeys](#wechseln-des-yubikeys)
   - [Reset des Yubikey](#reset-des-yubikey)
 
 
@@ -559,8 +560,16 @@ gpg2 -a --export 0xC7C50C3E030B3220 >> key.asc
 ### Einrichten der Keys für SSH auf MacOS
 Die Installation von gpg kann mit `brew install gnupg2` durchgeführt werden.
 
-Danach müssen folgende Einstellungen vorgenommen werden, damit ssh die GPG-Keys verwendet
 
+Nun kann der Key importiert werden. Dies kann anz einfach über folgenden Befehl durchgeführt werden:
+```
+gpg --import key.asc
+```
+*key.asc* sollte natürlich durch den Public-Key ergänzt werden.
+Der Key sollte nun bei gestecktem Yubikey mit `gpg -K` aufgelistet werden.
+
+
+Danach müssen folgende Einstellungen vorgenommen werden, damit SSH die GPG-Keys verwendet
 
 Hinzufügen oder Editieren der Datei `~/.gnupg/gpg-agent.conf`:
 ```
@@ -580,7 +589,18 @@ export GPG_TTY SSH_AUTH_SOCK
 
 Anschließend ist ein Neustart des Macs notwendig.
 
-Der SSH-Key kann nun mit `ssh-add -L` exportiert werden, um ihn auf den Servern in den uthorized_keys einzutragen.
+Der Public-SSH-Key kann nun mit `ssh-add -L` exportiert werden, um ihn auf den Servern in den uthorized_keys einzutragen.
+
+### Wechseln des Yubikeys
+Falls man einen anderen Yubikey mit dem selben Schlüssel verwenden will (beispielsweise weil man den Schlüssel aus dem Backup wiederhergestellt hat), dann muss man auf den Clienten den Verweis auf den alten Yubikey löschen. 
+
+Dies geht mit
+```
+rm ~/.gnupg/private-keys-v1.d/*
+```
+Anschließend muss der neue eingesteckt Yubikey mit `gpg --card-status`neu eingelesen werden.
+
+Nun kann der neue Yubikey so wie der alte verwendet werden.
 
 
 ## Reset des Yubikey
