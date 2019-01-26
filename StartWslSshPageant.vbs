@@ -1,0 +1,1 @@
+WScript.CreateObject( "WScript.Shell" ).Run "C:\ubuntu\wsl-ssh-pageant\wsl-ssh-pageant.exe --wsl C:\ubuntu\wsl-ssh-pageant\ssh-agent.sock",0,0

@@ -15,6 +15,7 @@ Diese Doku erklärt wie man den Yubikey einrichtet und zur Verbindung per SSH ve
   - [Client](#client)
     - [Einrichten der Keys für SSH auf MacOS](#einrichten-der-keys-f%C3%BCr-ssh-auf-macos)
     - [Einrichten von SSH auf Windows mit Putty](#einrichten-von-ssh-auf-windows-mit-putty)
+    - [Einrichtung in Windows zur Nutzung im WSL (Windows Subsystem for Linux)](#einrichtung-in-windows-zur-nutzung-im-wsl-windows-subsystem-for-linux)
     - [Wechseln des Yubikeys](#wechseln-des-yubikeys)
   - [Reset des Yubikey](#reset-des-yubikey)
 
@@ -614,6 +615,41 @@ gpg-connect-agent killagent /bye
 gpg-connect-agent /bye
 ```
 
+### Einrichtung in Windows zur Nutzung im WSL (Windows Subsystem for Linux)
+Leider lässt sich zurzeit kein USB-Device direkt im WSL mappen. Aus diesem Grunde muss der SSH-Key anders ausgetauscht werden.
+Hierfür nutze ich das Tool [wsl-ssh-pageant von benpye][https://github.com/benpye/wsl-ssh-pageant]. Dieses Tool stellt einen File-Basiertes Relay zur Verfügung.
+
+> Vorraussetzung ist, dass der Yubikey bereits für Putty installiert ist. [(siehe oben)](#einrichten-von-ssh-auf-windows-mit-putty)
+
+Zuerst erstelle ich einen Ordner auf meiner Windows-Maschiene, wo ich die Binarys entpacke. Außerdem verwende ich diese Pfad auch für den Austausch des Sockets.
+In meinem Beispiel benutze ich den folgenden Pfad:
+```
+C:\ubuntu\wsl-ssh-pageant
+```
+Nun muss lediglich der wsl-ssh-pageant gestartet werden, dabei übergebe ich die Parameter des Socket-Files.
+```
+C:\ubuntu\wsl-ssh-pageant\wsl-ssh-pageant.exe --wsl C:\ubuntu\wsl-ssh-pageant\ssh-agent.sock
+```
+
+Anschließend wird er Socket auf dem WSL noch auf die SSH_AUTH_SOCK-Variable geschrieben
+```
+export SSH_AUTH_SOCK=/mnt/c/ubuntu/wsl-ssh-pageant/ssh-agent.sock
+```
+
+Nun sollte sich der Key mit `ssh-add -L` ausführen lassen.
+
+Da wir das ganze nun nur Temporär am Laufen haben, kümmern wir uns nun darum, dass dies alles im Autostart läuft.
+
+Damit wir den *wsl-ssh-pageant.exe* nicht in einem Fenster öffnen, erstellen wir am besten ein Visual-Basic Script.
+Dafür erstellen wir einfach eine Datei mit der Endung *.vbs mit folgendem Inhalt in den Autostartordner:
+```vbnet
+WScript.CreateObject( "WScript.Shell" ).Run "C:\ubuntu\wsl-ssh-pageant\wsl-ssh-pageant.exe --wsl C:\ubuntu\wsl-ssh-pageant\ssh-agent.sock",0,0
+```
+Der Pfad muss natürlich entsprechend angepasst werden.
+
+
+Nun müssen wir nurnoch im Subsystem die SSH_AUTH_SOCK-Variable dauerhaft setzen. Dies machen wir am besten einfach im File `~/.bashrc`. Hier ergänzen wir einfach `export SSH_AUTH_SOCK=/mnt/c/ubuntu/wsl-ssh-pageant/ssh-agent.sock`.
+
 
 ### Wechseln des Yubikeys
 Falls man einen anderen Yubikey mit dem selben Schlüssel verwenden will (beispielsweise weil man den Schlüssel aus dem Backup wiederhergestellt hat), dann muss man auf den Clienten den Verweis auf den alten Yubikey löschen. 
@@ -639,7 +675,12 @@ Reset code:  NOT SET
 Admin PIN:   12345678
 ```
 
+
+-----
+
 Vielen Dank an:
 + [Superuser Forum (EN)](https://superuser.com/questions/1284632/unable-to-get-yubikey-neo-u2f-working-in-linux-inside-of-vmware-workstation)
 + [FROGESLNET (EN)](https://www.forgesi.net/gpg-smartcard/)
 + [Yubico-Dev (EN)](https://developers.yubico.com/PGP/SSH_authentication/Windows.html)
++ [Codingnest.com](https://codingnest.com/how-to-use-gpg-with-yubikey-wsl/=)
++ [benpye][https://github.com/benpye]
