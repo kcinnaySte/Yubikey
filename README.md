@@ -14,6 +14,7 @@ Diese Doku erklärt wie man den Yubikey einrichtet und zur Verbindung per SSH ve
     - [Exportieren des Public-Keys](#exportieren-des-public-keys)
   - [Client](#client)
     - [Einrichten der Keys für SSH auf MacOS](#einrichten-der-keys-f%C3%BCr-ssh-auf-macos)
+    - [Einrichten von SSH auf Windows mit Putty](#einrichten-von-ssh-auf-windows-mit-putty)
     - [Wechseln des Yubikeys](#wechseln-des-yubikeys)
   - [Reset des Yubikey](#reset-des-yubikey)
 
@@ -591,6 +592,29 @@ Anschließend ist ein Neustart des Macs notwendig.
 
 Der Public-SSH-Key kann nun mit `ssh-add -L` exportiert werden, um ihn auf den Servern in den uthorized_keys einzutragen.
 
+### Einrichten von SSH auf Windows mit Putty
+Für das Einrichten des GPG-Keys via Putty muss zunächst [GPG4Win](https://www.gpg4win.org/) installiert werden.
+Anschließend muss die Configdatei `%APPDATA%\gnupg\gpg-agent.conf` um folgende Zeilen ergänzt werden:
+```
+enable-ssh-support
+enable-putty-support
+```
+Alternativ kann auch in einer GUI zur Schlüsselverwaltung (bspw. Kleopatra) der Putty-Support aktiviert werden.
+
+Außerdem sollte der GPG-Connect-Agent Automatisch mit Windows gestartet werden, hierzu sollte erstellt man am einfachsten eine Batch im Autostartordner mit folgendem Inhalt:
+```
+gpg-connect-agent /bye
+```
+
+Danach sollte die Verbindung via [Putty](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html) bereits funktionieren.
+
+Leider kann es hin-und-wieder zu einigen Problemen im GPG-Agent kommen. In diesem Fall kann man den Agent mit folgenden Befehlen neustarten:
+```
+gpg-connect-agent killagent /bye
+gpg-connect-agent /bye
+```
+
+
 ### Wechseln des Yubikeys
 Falls man einen anderen Yubikey mit dem selben Schlüssel verwenden will (beispielsweise weil man den Schlüssel aus dem Backup wiederhergestellt hat), dann muss man auf den Clienten den Verweis auf den alten Yubikey löschen. 
 
@@ -618,3 +642,4 @@ Admin PIN:   12345678
 Vielen Dank an:
 + [Superuser Forum (EN)](https://superuser.com/questions/1284632/unable-to-get-yubikey-neo-u2f-working-in-linux-inside-of-vmware-workstation)
 + [FROGESLNET (EN)](https://www.forgesi.net/gpg-smartcard/)
++ [Yubico-Dev (EN)](https://developers.yubico.com/PGP/SSH_authentication/Windows.html)
