@@ -13,6 +13,7 @@ Diese Doku erklärt wie man den Yubikey einrichtet und zur Verbindung per SSH ve
     - [Aufspielen des Sub-Keys auf den Yubikey](#aufspielen-des-sub-keys-auf-den-yubikey)
     - [Exportieren des Public-Keys](#exportieren-des-public-keys)
   - [Client](#client)
+    - [Einrichten unter Ubuntu disco (19.04)](#einrichten-unter-ubuntu-disco-1904)
     - [Einrichten der Keys für SSH auf MacOS](#einrichten-der-keys-f%C3%BCr-ssh-auf-macos)
     - [Einrichten von SSH auf Windows mit Putty](#einrichten-von-ssh-auf-windows-mit-putty)
     - [Einrichtung in Windows zur Nutzung im WSL (Windows Subsystem for Linux)](#einrichtung-in-windows-zur-nutzung-im-wsl-windows-subsystem-for-linux)
@@ -559,6 +560,19 @@ gpg2 -a --export 0xC7C50C3E030B3220 >> key.asc
 ```
 
 ## Client
+
+### Einrichten unter UBUNTU disco (19.04)
+Unter Ubuntu müssen gpg2 sowie der gpg-agent installiert sein. Sollte dies noch nicht der Fall sein, kann dies einfach durch die Paketverwaltung (apt-get) nachgeholt werden.
+Anschließend muss die Umgebungsvariable `SSH_AUTH_SOCK` noch gesetzt werden.
+Dies wird am einfachsten mit dem Folgenden Zeilen erledigt:
+```
+# Setzen der SSH-Keys
+unset SSH_AGENT_PID
+if [ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ]; then
+  export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+fi
+```
+Am besten wird dieser Code in die ~/.bashrc eingefühgt, sodass dieser immer automatisch ausgeführt wird.
 ### Einrichten der Keys für SSH auf MacOS
 Die Installation von gpg kann mit `brew install gnupg2` durchgeführt werden.
 
